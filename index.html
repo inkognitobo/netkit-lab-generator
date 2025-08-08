@@ -186,7 +186,7 @@
 							<tr class="xs-floating-right">
 								<td>
 									<p class="btn btn-success" data-ng-click="addMachine()">Add machine</p>
-									<p class="btn btn-danger" data-ng-click="removeMachine()"
+									<p class="btn btn-danger" data-ng-click="removeLastMachine()"
 										data-ng-disabled="counter<=1">Remove last machine</p>
 								</td>
 							</tr>
@@ -210,9 +210,11 @@
 							<td>
 								<div id="{{machine._uid}}" class="anchor-id"></div>
 								<div>
-									<label>Machine {{machine.row}}:</label>
+                                                                    <label>Machine:</label>
 									<input type="text" data-ng-model="machine.name" class="form-control"
-										placeholder="pc{{machine.row}}" pattern="[a-z0-9_]{1,30}" required />
+                                                                                placeholder="pc-{{machine._uid}}" pattern="[a-z0-9_]{1,30}" required />
+									<p class="btn btn-danger" data-ng-click="removeMachine()"
+										data-ng-disabled="counter<=1">Remove machine</p>
 								</div>
 								<p>
 									<input title="type" type="radio" value="terminal" data-ng-model="machine.type" />

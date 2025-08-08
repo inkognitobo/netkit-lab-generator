@@ -25,7 +25,6 @@ app.controller("nc", function ($location, $anchorScroll, $scope) {
 	$scope.addMachine = function () {
 		$scope.counter++;
 		var p = JSON.clone(backbone);
-		p.row = $scope.counter;
 		p._uid = Math.floor((Math.random() * (1000 ** 5)) + 1);
 		$scope.netkit.push(p);
 
@@ -34,7 +33,16 @@ app.controller("nc", function ($location, $anchorScroll, $scope) {
 
 	$scope.addMachine();
 
-	$scope.removeMachine = function () {
+	$scope.removeMachine = function (machine) {
+		if ($scope.netkit.length > 1 && confirm("Are you sure you want to remove the machine?")) {
+			$scope.netkit.splice(machine, 1);
+			$scope.counter--;
+
+			changed = true;
+		}
+	};
+
+	$scope.removeLastMachine = function () {
 		if ($scope.netkit.length > 1 && confirm("Are you sure you want to remove the machine?")) {
 			$scope.netkit.pop();
 			$scope.counter--;
