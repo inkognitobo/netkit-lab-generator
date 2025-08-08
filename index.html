@@ -561,6 +561,18 @@
 												data-ng-model="machine.routing.bgp.remote[$index].description" />
 										</div>
 										<div>
+											<input title="redistributer" type="checkbox" value="1"
+												data-ng-model="machine.routing.bgp.rip" /> redistribute rip
+										</div>
+										<div>
+											<input title="redistributeo" type="checkbox" value="1"
+												data-ng-model="machine.routing.bgp.ospf" /> redistribute ospf
+										</div>
+										<div>
+											<input title="redistributec" type="checkbox" value="1"
+												data-ng-model="machine.routing.bgp.connected" /> redistribute connected
+										</div>
+										<div>
 											<label data-ng-show="machine.routingSoftware == 'quagga'">Directly in bgpd.conf:</label>
 											<label data-ng-show="machine.routingSoftware == 'frr'">Directly after bgp config in frr.conf:</label>
 											<textarea title="free" rows="3" class="form-control"

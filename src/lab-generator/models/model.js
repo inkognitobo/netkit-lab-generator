@@ -8,7 +8,6 @@ var labInfo = {
 
 var backbone = {
 	name: "",
-	row: 1,
 	type: "terminal",
 	routingSoftware: "frr",
 	interfaces: {
@@ -73,6 +72,9 @@ var backbone = {
 		},
 		bgp: {
 			en: false,
+			connected: false,
+			rip: false,
+			ospf: false,
 			as: "",
 			network: [""],
 			remote: [{

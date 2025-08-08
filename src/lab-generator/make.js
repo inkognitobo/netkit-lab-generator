@@ -226,6 +226,17 @@ function makeBgpConfFrr(router, lab) {
 		}
 	});
 
+	lab.file[router.name + "/etc/frr/frr.conf"] += "\n";
+	if (router.routing.bgp.en && router.routing.bgp.connected) {
+		lab.file[router.name + "/etc/frr/frr.conf"] += "redistribute connected\n";
+	}
+	if (router.routing.bgp.en && router.routing.bgp.rip) {
+		lab.file[router.name + "/etc/frr/frr.conf"] += "redistribute rip\n";
+	}
+	if (router.routing.bgp.en && router.routing.bgp.ospf) {
+		lab.file[router.name + "/etc/frr/frr.conf"] += "redistribute ospf\n";
+	}
+
 	//Free conf
 	if (router.routing.bgp.free && router.routing.bgp.free != "")
 		lab.file[router.name + "/etc/frr/frr.conf"] += router.routing.bgp.free + "\n";
