@@ -444,12 +444,39 @@ function makeStaticRouting(netkit, lab){
 	}
 }
 
+function parseFilepath(filepath) {
+    // Replace "\" and "//" with "/"
+    const cleanPath = filepath.replace(/\\/g, "/").replace(/\/\//g, "/");
+    const index = cleanPath.lastIndexOf("/");
+    let dirname;
+    let filename;
+
+    if (index === -1) {
+        dirname = "";
+        filename = cleanPath;
+    } else {
+        dirname = cleanPath.substring(0, index);
+        filename = cleanPath.substring(index+1);
+    }
+
+    return [dirname, filename];
+
+}
+
 function makeOther(netkit, lab) {
 	for (let machine of netkit) {
 		if (machine.name && machine.name != "" && machine.type == "other" && machine.other.image) {
 			lab.file["lab.conf"] += machine.name + '[image]="' + machine.other.image + '"\n';
 			for (let file of machine.other.files) {
-				lab.file["/etc/scripts/" + file.name] = file.contents;
+                                if (file.name && file.name != "") {
+                                    let filepath = machine.name + "/" + file.name;
+                                    let [dirname, filename] = parseFilepath(filepath);
+                                    // The machine directory is created anyways
+                                    if (dirname && dirname !== machine.name) {
+                                        lab.folders.push(dirname);
+                                    }
+                                    lab.file[dirname + "/" + filename] = file.contents;
+                                }
 			}
 		}
 	}

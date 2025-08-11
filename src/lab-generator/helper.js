@@ -157,3 +157,23 @@ function setNetworkOptions() {
 
   network.setOptions({edges, physics})
 }
+
+function parseFilepath(filepath) {
+    // Replace "\" and "//" with "/"
+    const cleanPath = filepath.replace(/\\/g, "/").replace(/\/\//g, "/");
+    const index = cleanPath.lastIndexOf("/");
+    let dirname;
+    let filename;
+
+    if (index === -1) {
+        dirname = "";
+        filename = cleanPath;
+    } else {
+        dirname = cleanPath.substring(0, index);
+        filename = cleanPath.substring(index+1);
+    }
+
+    return [dirname, filename];
+
+}
+

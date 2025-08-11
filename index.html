@@ -207,13 +207,14 @@
 
 						<!-- each row is a machine -->
 						<tr data-ng-repeat="machine in netkit track by $index">
+                                                        {{machine.id = $index}}
 							<td>
 								<div id="{{machine._uid}}" class="anchor-id"></div>
 								<div>
-                                                                    <label>Machine:</label>
+                                                                    <label>Machine: {{machine.row}}</label>
 									<input type="text" data-ng-model="machine.name" class="form-control"
-                                                                                placeholder="pc-{{machine._uid}}" pattern="[a-z0-9_]{1,30}" required />
-									<p class="btn btn-danger" data-ng-click="removeMachine()"
+                                                                        placeholder="pc-{{machine.row}}" pattern="[a-z0-9_]{1,30}" required />
+									<p class="btn btn-danger" data-ng-click="removeMachine(machine)"
 										data-ng-disabled="counter<=1">Remove machine</p>
 								</div>
 								<p>
@@ -387,7 +388,7 @@
 									<p class="btn btn-success" data-ng-click="addFile(machine)">Add file</p>
 									<p class="btn btn-danger" data-ng-click="removeFile(machine)"
 										data-ng-disabled="machine.other.files<=1">Remove last file</p>
-									<p>(files will be stored in /etc/scripts/)</p>
+                                                                        <p>(files will be stored in {{machine.name || machine._uid}}/)</p>
 									<div data-ng-repeat="fl in machine.other.files">
 										<div>
 											<label>File name:</label>

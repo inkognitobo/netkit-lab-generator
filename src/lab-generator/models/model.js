@@ -8,6 +8,7 @@ var labInfo = {
 
 var backbone = {
 	name: "",
+        row: 1,
 	type: "terminal",
 	routingSoftware: "frr",
 	interfaces: {
