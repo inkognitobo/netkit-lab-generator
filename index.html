@@ -388,12 +388,17 @@
 									<p class="btn btn-success" data-ng-click="addFile(machine)">Add file</p>
 									<p class="btn btn-danger" data-ng-click="removeFile(machine)"
 										data-ng-disabled="machine.other.files<=1">Remove last file</p>
-                                                                        <p>(files will be stored in {{machine.name || machine._uid}}/)</p>
+                                                                        <p>(files are stored machine folder)</p>
 									<div data-ng-repeat="fl in machine.other.files">
 										<div>
-											<label>File name:</label>
-											<input type="text" data-ng-model="fl.name" class="form-control"
-												placeholder="e.g: my_switch.p4" required />
+											<label>File Dst:</label>
+											<input type="text" data-ng-model="fl.dst" class="form-control"
+												placeholder="e.g: /tmp/hello.txt" required />
+										</div>
+										<div>
+											<label>File Src (relative to lab folder):</label>
+											<input type="text" data-ng-model="fl.src" class="form-control"
+												placeholder="e.g: ../scripts/script1.sh" />
 										</div>
 										<div>
 											<label>File contents:</label>

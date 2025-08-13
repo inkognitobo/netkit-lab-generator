@@ -444,38 +444,25 @@ function makeStaticRouting(netkit, lab){
 	}
 }
 
-function parseFilepath(filepath) {
-    // Replace "\" and "//" with "/"
-    const cleanPath = filepath.replace(/\\/g, "/").replace(/\/\//g, "/");
-    const index = cleanPath.lastIndexOf("/");
-    let dirname;
-    let filename;
-
-    if (index === -1) {
-        dirname = "";
-        filename = cleanPath;
-    } else {
-        dirname = cleanPath.substring(0, index);
-        filename = cleanPath.substring(index+1);
-    }
-
-    return [dirname, filename];
-
-}
-
 function makeOther(netkit, lab) {
 	for (let machine of netkit) {
 		if (machine.name && machine.name != "" && machine.type == "other" && machine.other.image) {
 			lab.file["lab.conf"] += machine.name + '[image]="' + machine.other.image + '"\n';
 			for (let file of machine.other.files) {
-                                if (file.name && file.name != "") {
-                                    let filepath = machine.name + "/" + file.name;
-                                    let [dirname, filename] = parseFilepath(filepath);
+                                if (file.dst && file.dst !== "") {
+                                    let dstpath = machine.name + "/" + file.dst;
+                                    let [dirname, filename] = parseFilepath(dstpath);
                                     // The machine directory is created anyways
                                     if (dirname && dirname !== machine.name) {
                                         lab.folders.push(dirname);
                                     }
-                                    lab.file[dirname + "/" + filename] = file.contents;
+                                    lab.file[dirname + "/" + filename] = "";
+
+                                    if (file.src && file.src != "") {
+                                        lab.ext_file[dirname + "/" + filename] = file.src;
+                                    }
+
+                                    lab.file[dirname + "/" + filename] += file.contents;
                                 }
 			}
 		}
@@ -675,6 +662,7 @@ function makeFilesStructure(netkit, labInfo) {
 	var lab = {};
 	lab.folders = [];
 	lab.file = [];
+	lab.ext_file = [];
 	lab.warning = 0;
 	lab.error = 0;
 	makeLabInfo(labInfo, lab);
@@ -715,6 +703,10 @@ function makeScript(lab) {
 			if (line != "") text += "echo '" + line + "' >> " + fileName + "\n";
 		}
 	}
+
+	for (let fileName in lab.ext_file) {
+		text += "\ncat " + lab.ext_file[fileName] + " >> " + fileName + "\n";
+        }
 
 	text += "\nrm \"../$0\"\n";
 	return text;

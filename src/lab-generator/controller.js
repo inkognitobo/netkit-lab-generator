@@ -89,7 +89,7 @@ app.controller("nc", function ($location, $anchorScroll, $scope) {
 
 	$scope.addFile = function (machine) {
 		machine.other.fileCounter++;
-		machine.other.files.push({ "name": "", "contents": "" });
+		machine.other.files.push({ "dst": "", "src": "", "contents": "" });
 	};
 
 	$scope.removeFile = function (machine) {
