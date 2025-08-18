@@ -43,17 +43,11 @@ function makeLabConfFile(netkit, lab) {
 				lab.file["lab.conf"] += machine.name + "[" + interface.eth.number + "]=" + interface.eth.domain + "\n";
 			}
 		}
-		if(machine.type == "router"){
-			if(machine.routingSoftware == "frr"){
-				lab.file["lab.conf"] += machine.name + "[image]=kathara/frr";
-			}
-			if(machine.routingSoftware == "quagga"){
-				lab.file["lab.conf"] += machine.name + "[image]=kathara/quagga";
-			}
-		}
-		if(machine.type == "terminal" || machine.type == "ws" || machine.type == "ns"){
+		if (machine.other.image && machine.other.image != "") {
+			lab.file["lab.conf"] += machine.name + '[image]="' + machine.other.image + '"\n';
+                } else {
 			lab.file["lab.conf"] += machine.name + "[image]=kathara/base";
-		}
+                }
 		lab.file["lab.conf"] += "\n";
 	}
 }
@@ -444,10 +438,9 @@ function makeStaticRouting(netkit, lab){
 	}
 }
 
-function makeOther(netkit, lab) {
+function makeFiles(netkit, lab) {
 	for (let machine of netkit) {
-		if (machine.name && machine.name != "" && machine.type == "other" && machine.other.image) {
-			lab.file["lab.conf"] += machine.name + '[image]="' + machine.other.image + '"\n';
+		if (machine.name && machine.name != "") {
 			for (let file of machine.other.files) {
                                 if (file.dst && file.dst !== "") {
                                     let dstpath = machine.name + "/" + file.dst;
@@ -594,64 +587,6 @@ function makeNameserver(netkit, lab) {
 }
 
 
-function makeOVSwitch(netkit, lab) {
-	for (let machine of netkit) {
-		if (machine.name && machine.name != "" && machine.type == "switch") {
-			lab.file["lab.conf"] += machine.name + '[image]="kathara/sdn"\n';
-			lab.file[machine.name + ".startup"] +=
-				machine.interfaces.if.map(function (el) {
-					if (el.eth.number != 0) return "ifconfig eth" + el.eth.number + " 0";
-				}).join("\n") + "\n" +
-
-				"\nservice openvswitch-switch start\n" +
-				"ovs-vsctl add-br br0\n" +
-
-				machine.interfaces.if.map(function (el) {
-					if (el.eth.number != 0) return "ovs-vsctl add-port br0 eth" + el.eth.number;
-				}).join("\n") + "\n" +
-
-				"\novs-vsctl set bridge br0 protocols=[OpenFlow13]\n" +
-				"ovs-vsctl set-controller br0 tcp:192.168.100.1:6633\n";
-		}
-	}
-}
-
-function makeRyuController(netkit, lab) {
-	let isSDN = false;
-	for (let machine of netkit) {
-		if (machine.name && machine.name != "" && machine.type == "controller") {
-			lab.file["lab.conf"] += machine.name + '[image]="kathara/sdn"\n';
-			isSDN = true;
-
-			let filename = machine.name + ".startup";
-			let ryuAppPrefix = "ryu.app.";
-
-			// Avvio le app Ryu
-			lab.file[filename] += "\nryu-manager ";
-			if (machine.ryu.topology)
-				lab.file[filename] += "--observe-links " + ryuAppPrefix + "rest_topology ";
-			if (machine.ryu.stp)
-				lab.file[filename] += ryuAppPrefix + "simple_switch_stp_13 ";
-			if (machine.ryu.rest)
-				lab.file[filename] += ryuAppPrefix + "ofctl_rest ";
-			if (machine.ryu.custom) {
-				let apps = machine.ryu.custom.split(" ");
-				for (let app of apps) {
-					lab.file[filename] += ryuAppPrefix + app + " ";
-				}
-			}
-
-			if (!(machine.ryu.topology || machine.ryu.stp || machine.ryu.custom || machine.ryu.rest)) {
-				lab.file[filename] += ryuAppPrefix + "simple_switch_13";
-			}
-		}
-	}
-
-	if (isElectron() && isSDN) document.getElementById("connect").classList.remove("hidden");
-	else document.getElementById("connect").classList.add("hidden");
-}
-
-
 function makeFilesStructure(netkit, labInfo) {
 	let isAllValidNames = netkit
 		.map(machine => machine.name && /[A-z0-9]+/i.test(machine.name))
@@ -670,13 +605,11 @@ function makeFilesStructure(netkit, labInfo) {
 	makeLabConfFile(netkit, lab);
 	makeStartupFiles(netkit, lab);
 	makeStaticRouting(netkit, lab);
+        makeFiles(netkit, lab);
 	makeTerminal(netkit, lab);
 	makeRouter(netkit, lab);
 	makeWebserver(netkit, lab);
 	makeNameserver(netkit, lab);
-	makeOther(netkit, lab);
-	makeOVSwitch(netkit, lab);
-	makeRyuController(netkit, lab);
 
 	if (labInfo.toggle == "disable")
 		makeGraph(netkit);

@@ -201,7 +201,8 @@
 						<tr>
 							<th>Machine informations</th>
 							<th>Network interfaces</th>
-							<th>Gateway (static):</th>
+							<th>Gateway (static)</th>
+							<th>Files</th>
 							<th>Additional functions</th>
 						</tr>
 
@@ -213,7 +214,7 @@
 								<div>
                                                                     <label>Machine: {{machine.row}}</label>
 									<input type="text" data-ng-model="machine.name" class="form-control"
-                                                                        placeholder="pc-{{machine.row}}" pattern="[a-z0-9_]{1,30}" required />
+                                                                        placeholder="pc_{{machine.row}}" pattern="[a-z0-9_]{1,30}" required />
 									<p class="btn btn-danger" data-ng-click="removeMachine(machine)"
 										data-ng-disabled="counter<=1">Remove machine</p>
 								</div>
@@ -233,21 +234,16 @@
 									<input title="type" type="radio" value="ws" data-ng-model="machine.type" /> Web
 									Server
 								</p>
+								<p>
+									<input title="type" type="radio" value="other" data-ng-model="machine.type" /> Other
+								</p>
 								<p data-ng-show="toggleOVSwitchSelection(netkit, this.machine.type)">
 									<input title="type" type="radio" value="switch" data-ng-model="machine.type" /> Open
 									vSwitch
 								</p>
-								<p data-ng-show="toggleControllerSelection(netkit, this.machine.type)">
-									<input title="type" type="radio" value="controller" data-ng-model="machine.type" />
-									OpenFlow Ryu controller
-								</p>
-								<p>
-									<input title="type" type="radio" value="other" data-ng-model="machine.type" /> Other
-								</p>
-								<div data-ng-show="machine.type == 'other'">
+								<div>
 									<label>Image Name:</label>
-									<input type="text" data-ng-model="machine.other.image" class="form-control" required
-										placeholder="e.g.: p4" required />
+									<input type="text" data-ng-model="machine.other.image" class="form-control" placeholder="kathara/base" />
 								</div>
 							</td>
 
@@ -326,6 +322,30 @@
 							</td>
 
 							<td>
+                                                                <p class="btn btn-success" data-ng-click="addFile(machine)">Add file</p>
+                                                                <p class="btn btn-danger" data-ng-click="removeFile(machine)"
+                                                                        data-ng-disabled="machine.other.files<=1">Remove last file</p>
+                                                                <p>(files are stored machine folder)</p>
+                                                                <div data-ng-repeat="fl in machine.other.files">
+                                                                        <div>
+                                                                                <label>File Dst:</label>
+                                                                                <input type="text" data-ng-model="fl.dst" class="form-control"
+                                                                                        placeholder="e.g: /tmp/hello.txt" required />
+                                                                        </div>
+                                                                        <div>
+                                                                                <label>File Src (relative to lab folder):</label>
+                                                                                <input type="text" data-ng-model="fl.src" class="form-control"
+                                                                                        placeholder="e.g: ../scripts/script1.sh" />
+                                                                        </div>
+                                                                        <div>
+                                                                                <label>File contents:</label>
+                                                                                <textarea title="free" rows="3" class="form-control"
+                                                                                        data-ng-model="fl.contents"></textarea>
+                                                                        </div>
+                                                                </div>
+							</td>
+
+							<td>
 								<div data-ng-show="machine.type=='terminal'">
 									<label>Reference DNS (resolv.conf nameserver):</label>
 									<select title="en" data-ng-model="machine.pc.dns">
@@ -385,27 +405,6 @@
 								</div>
 
 								<div data-ng-show="machine.type=='other'">
-									<p class="btn btn-success" data-ng-click="addFile(machine)">Add file</p>
-									<p class="btn btn-danger" data-ng-click="removeFile(machine)"
-										data-ng-disabled="machine.other.files<=1">Remove last file</p>
-                                                                        <p>(files are stored machine folder)</p>
-									<div data-ng-repeat="fl in machine.other.files">
-										<div>
-											<label>File Dst:</label>
-											<input type="text" data-ng-model="fl.dst" class="form-control"
-												placeholder="e.g: /tmp/hello.txt" required />
-										</div>
-										<div>
-											<label>File Src (relative to lab folder):</label>
-											<input type="text" data-ng-model="fl.src" class="form-control"
-												placeholder="e.g: ../scripts/script1.sh" />
-										</div>
-										<div>
-											<label>File contents:</label>
-											<textarea title="free" rows="3" class="form-control"
-												data-ng-model="fl.contents"></textarea>
-										</div>
-									</div>
 								</div>
 
 								<div data-ng-show="machine.type=='router'">
