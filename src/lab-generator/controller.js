@@ -16,6 +16,16 @@ app.controller("nc", function ($location, $anchorScroll, $scope) {
 	$scope.counter = 0;
 	$scope.labInfo.toggle = "enable";
 
+        $scope.updateRows = function () {
+                for (let i = 0; i < $scope.counter; i++) {
+                    const machine = $scope.netkit[i];
+                    machine.row = i+1;
+                    console.log(machine.row);
+                }
+
+                changed = true;
+        };
+
 	$scope.scrollTo = function (e, hash) {
 		e.preventDefault();
 		$location.hash(hash);
@@ -39,13 +49,9 @@ app.controller("nc", function ($location, $anchorScroll, $scope) {
                         console.log(machine.row);
 			$scope.netkit.splice(machine.row-1, 1);
 			$scope.counter--;
-                        
-                        for (let i = 0; i < $scope.counter; i++) {
-                            const machine = $scope.netkit[i];
-                            machine.row = i+1;
-                            console.log(machine.row);
-                        }
 
+                        $scope.updateRows();
+                        
 			changed = true;
 		}
 	};
